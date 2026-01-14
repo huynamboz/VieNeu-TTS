@@ -10,6 +10,7 @@
 <img width="899" height="615" alt="VieNeu-TTS UI" src="https://github.com/user-attachments/assets/7eb9b816-6ab7-4049-866f-f85e36cb9c6f" />
 
 **VieNeu-TTS** là mô hình Text-to-Speech (TTS) tiếng Việt tiên tiến hỗ trợ **Instant Voice Cloning** (tái tạo giọng nói tức thì) chỉ với 3-5 giây âm thanh mẫu.
+- **Author:** Phạm Nguyễn Ngọc Bảo
 
 ---
 
@@ -225,7 +226,6 @@ Xem thêm chi tiết tại [docs/Deploy.md](docs/Deploy.md).
 
 ## 🤝 7. Hỗ trợ & Liên hệ <a name="hỗ-trợ"></a>
 
-- **Tác giả:** Phạm Nguyễn Ngọc Bảo
 - **Hugging Face:** [pnnbao-ump](https://huggingface.co/pnnbao-ump)
 - **Discord:** [Tham gia cộng đồng](https://discord.gg/yJt8kzjzWZ)
 - **Facebook:** [Pham Nguyen Ngoc Bao](https://www.facebook.com/bao.phamnguyenngoc.5)

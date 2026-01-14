@@ -1161,15 +1161,17 @@ with gr.Blocks(theme=theme, css=css, title="VieNeu-TTS") as demo:
         backbone_select.change(update_voice_dropdown, [backbone_select, voice_select], voice_select)
         
         # Handler to show/hide Voice Cloning tab
-        def on_codec_change(codec: str):
+        def on_codec_change(codec: str, current_mode: str):
             is_onnx = "onnx" in codec.lower()
             # If switching to ONNX and we are on custom mode, switch back to preset
-            return gr.update(visible=not is_onnx), gr.update(selected="preset_mode" if is_onnx else None)
+            if is_onnx and current_mode == "custom_mode":
+                return gr.update(visible=False), gr.update(selected="preset_mode"), "preset_mode"
+            return gr.update(visible=not is_onnx), gr.update(), current_mode
         
         codec_select.change(
             on_codec_change, 
-            inputs=[codec_select], 
-            outputs=[tab_custom, tabs]
+            inputs=[codec_select, current_mode_state], 
+            outputs=[tab_custom, tabs, current_mode_state]
         )
         
         # Bind tab events to update state
@@ -1181,19 +1183,21 @@ with gr.Blocks(theme=theme, css=css, title="VieNeu-TTS") as demo:
         # --- Custom Model Event Handlers ---
         def on_backbone_change(choice):
             is_custom = (choice == "Custom Model")
+            new_tab = "custom_voice_mode" if is_custom else "preset_mode"
             # Hide/show tabs based on custom model choice
             return (
                 gr.update(visible=is_custom),  # custom_model_group
                 gr.update(visible=not is_custom),  # tab_preset
                 gr.update(visible=not is_custom),  # tab_custom
                 gr.update(visible=is_custom),  # tab_custom_voice
-                gr.update(selected="custom_voice_mode" if is_custom else "preset_mode"),  # tabs
+                gr.update(selected=new_tab),  # tabs
+                new_tab,  # current_mode_state
             )
 
         backbone_select.change(
             on_backbone_change,
             inputs=[backbone_select],
-            outputs=[custom_model_group, tab_preset, tab_custom, tab_custom_voice, tabs]
+            outputs=[custom_model_group, tab_preset, tab_custom, tab_custom_voice, tabs, current_mode_state]
         )
         
         def on_custom_id_change(model_id):

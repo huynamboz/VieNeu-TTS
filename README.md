@@ -26,6 +26,7 @@ These represent a significant upgrade from the previous VieNeu-TTS-140h with the
 - **Multiple model formats**: Support for PyTorch, GGUF Q4/Q8 (CPU optimized), and ONNX codec
 
 VieNeu-TTS delivers production-ready speech synthesis fully offline.
+- **Author:** Phạm Nguyễn Ngọc Bảo
 
 ---
 
@@ -260,7 +261,6 @@ Check [docs/Deploy.md](docs/Deploy.md) for more details.
 
 ## 🤝 7. Support & Contact <a name="support"></a>
 
-- **Author:** Phạm Nguyễn Ngọc Bảo
 - **Hugging Face:** [pnnbao-ump](https://huggingface.co/pnnbao-ump)
 - **Discord:** [Join our community](https://discord.gg/yJt8kzjzWZ)
 - **Facebook:** [Pham Nguyen Ngoc Bao](https://www.facebook.com/bao.phamnguyenngoc.5)
