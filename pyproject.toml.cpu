@@ -1,0 +1,60 @@
+[tool.uv]
+index-strategy = "unsafe-best-match"
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[[tool.uv.index]]
+name = "pypi"
+url = "https://pypi.org/simple"
+
+[project]
+name = "vieneu"
+version = "1.1.5"
+description = "Advanced on-device Vietnamese TTS with instant voice cloning"
+readme = "README.md"
+authors = [
+    { name = "Phạm Nguyễn Ngọc Bảo", email = "pnnbao@gmail.com" }
+]
+requires-python = ">=3.10"
+dependencies = [
+    "phonemizer>=3.3.0",
+    "neucodec>=0.0.4",
+    "librosa>=0.11.0",
+    "gradio>=5.49.1",
+    "onnxruntime>=1.23.2",
+    "datasets>=3.2.0",
+    "torch",
+    "torchaudio",
+    "perth>=0.2.0",
+    "llama-cpp-python==0.3.16",
+    "requests",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/pnnbao97/VieNeu-TTS"
+"Bug Tracker" = "https://github.com/pnnbao97/VieNeu-TTS/issues"
+"Documentation" = "https://github.com/pnnbao97/VieNeu-TTS/blob/main/README.md"
+
+[tool.setuptools]
+packages = ["vieneu", "vieneu_utils"]
+
+[tool.setuptools.package-data]
+vieneu_utils = ["*.json"]
+vieneu = ["assets/samples/*"]
+
+[tool.uv.sources]
+torch = [
+    { index = "pytorch-cpu" }
+]
+
+torchaudio = [
+    { index = "pytorch-cpu" }
+]
+
+llama-cpp-python = [
+    { url = "https://github.com/pnnbao97/VieNeu-TTS/releases/download/wheels-v0.3.16/llama_cpp_python-0.3.16-cp312-cp312-win_amd64.whl", marker = "sys_platform == 'win32' and python_version == '3.12'" },
+    { index = "pypi", marker = "sys_platform != 'win32'" }
+]

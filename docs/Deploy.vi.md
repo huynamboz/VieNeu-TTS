@@ -27,11 +27,10 @@ Môi trường Development được thiết kế để bạn có thể chỉnh s
 
 Chạy lệnh sau sẽ bật Web UI. Bạn cũng có thể mở terminal khác để `exec` vào container.
 
-```bash
-# CPU
-docker compose --profile cpu up
+> **Lưu ý:** Docker hiện chỉ hỗ trợ **GPU**. Nếu muốn dùng CPU, vui lòng cài từ source (xem README chính).
 
-# GPU
+```bash
+# Chỉ hỗ trợ GPU
 docker compose --profile gpu up
 ```
 
@@ -42,8 +41,6 @@ Truy cập: **http://localhost:7860**
 Nếu muốn chạy scripts thủ công trong container đang chạy:
 
 ```bash
-docker compose exec cpu bash
-# hoặc
 docker compose exec gpu bash
 ```
 
@@ -113,9 +110,7 @@ Chúng tôi sử dụng Docker Compose Profiles để quản lý các variants:
 
 | Profile | Môi trường | File                      | Mô tả                                |
 | ------- | ---------- | ------------------------- | ------------------------------------ |
-| `cpu`   | **Dev**    | `docker-compose.yml`      | Dev mode (Mount code + Web UI)       |
 | `gpu`   | **Dev**    | `docker-compose.yml`      | Dev mode (Mount code + Web UI + GPU) |
-| `cpu`   | **Prod**   | `docker-compose.prod.yml` | Run mode (Baked code + Web UI)       |
 | `gpu`   | **Prod**   | `docker-compose.prod.yml` | Run mode (Baked code + Web UI + GPU) |
 
 ### Environment Variables

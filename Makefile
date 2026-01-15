@@ -1,13 +1,12 @@
 SHELL := /bin/bash
 
-.PHONY: help setup-gpu setup-cpu demo docker-cpu docker-gpu check clean
+.PHONY: help setup-gpu setup-cpu demo docker-gpu check clean
 
 help:
 	@echo "Targets:"
 	@echo "  make check       - check toolchain (python>=3.12, uv, espeak, docker, gpu, .env...)"
 	@echo "  make setup      - setup environment (uv sync)"
 	@echo "  make demo       - run Gradio UI"
-	@echo "  make docker-cpu - run docker compose --profile cpu (auto-create .env if needed)"
 	@echo "  make docker-gpu - run docker compose --profile gpu (auto-create .env if needed)"
 	@echo "  make clean       - clean artifacts (.venv, cache, ...)"
 	@echo "  make uv          - install uv (standalone)"
@@ -116,14 +115,6 @@ demo:
 	uv run gradio_app.py
 
 # --- Docker (auto-create .env if missing) ---
-docker-cpu:
-	@set -euo pipefail; \
-	if [ ! -f .env ] && [ -f .env.example ]; then \
-	  cp .env.example .env; \
-	  echo ">> Created .env from .env.example"; \
-	fi; \
-	docker compose --profile cpu up
-
 docker-gpu:
 	@set -euo pipefail; \
 	if [ ! -f .env ] && [ -f .env.example ]; then \

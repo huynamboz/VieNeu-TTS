@@ -1,22 +1,5 @@
 services:
   # ========================================================
-  # CPU Production Service
-  # ========================================================
-  cpu:
-    restart: unless-stopped
-    profiles: ["cpu"]
-    # Runtime chỉ quan tâm đến Image Name. 
-    # Image phải được build từ trước (bằng docker-compose.build.yml) hoặc pull từ registry
-    image: ${IMAGE_NAME}:${IMAGE_TAG}
-    container_name: vieneu-tts-cpu
-    ports:
-      - "${PORT}:7860"
-    volumes:
-      - huggingface_cache:/root/.cache/huggingface
-      - ./output_audio:/workspace/output_audio
-    env_file:
-      - .env
-  # ========================================================
   # GPU Production Service
   # ========================================================
   gpu:

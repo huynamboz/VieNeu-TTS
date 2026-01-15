@@ -28,11 +28,10 @@ The Development environment is designed to allow you to edit code on your host m
 
 Run the following command to start the Web UI. You can also open another terminal to `exec` into the container.
 
-```bash
-# CPU
-docker compose --profile cpu up
+> **Note:** Docker deployment currently supports **GPU only**. For CPU usage, please install from source (see main README).
 
-# GPU
+```bash
+# GPU only
 docker compose --profile gpu up
 ```
 
@@ -43,8 +42,6 @@ Access: **http://localhost:7860**
 If you want to run scripts manually in the running container:
 
 ```bash
-docker compose exec cpu bash
-# or
 docker compose exec gpu bash
 ```
 
@@ -149,9 +146,7 @@ We use Docker Compose Profiles to manage variants:
 
 | Profile | Environment | File                      | Description                          |
 | ------- | ----------- | ------------------------- | ------------------------------------ |
-| `cpu`   | **Dev**     | `docker-compose.yml`      | Dev mode (Mount code + Web UI)       |
 | `gpu`   | **Dev**     | `docker-compose.yml`      | Dev mode (Mount code + Web UI + GPU) |
-| `cpu`   | **Prod**    | `docker-compose.prod.yml` | Run mode (Baked code + Web UI)       |
 | `gpu`   | **Prod**    | `docker-compose.prod.yml` | Run mode (Baked code + Web UI + GPU) |
 
 ### Environment Variables

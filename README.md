@@ -79,15 +79,29 @@ The fastest way to experience VieNeu-TTS is through the Web interface (Gradio).
     ```
 
   - **Step B: Install dependencies**
-  - **Option 1: Default (with GPU support)**
+  
+  **Option 1: GPU Support (Default)**
     ```bash
     uv sync
     ```
     *(Optional: See [GGUF GPU Acceleration](#gguf-gpu) if you want to use GGUF models on GPU)*
 
-  - **Option 2: CPU-ONLY (Lightweight version)**
+  **Option 2: CPU-ONLY (Lightweight, no CUDA)**
     ```bash
-    uv sync --no-default-groups
+    # Linux/macOS:
+    cp pyproject.toml pyproject.toml.gpu
+    cp pyproject.toml.cpu pyproject.toml
+    uv sync
+    
+    # Windows (PowerShell/CMD):
+    copy pyproject.toml pyproject.toml.gpu
+    copy pyproject.toml.cpu pyproject.toml
+    uv sync
+    ```
+    *This installs PyTorch CPU version (~500MB lighter). To switch back to GPU:*
+    ```bash
+    # Linux/macOS: cp pyproject.toml.gpu pyproject.toml && uv sync
+    # Windows: copy pyproject.toml.gpu pyproject.toml && uv sync
     ```
 
 
@@ -155,7 +169,9 @@ Deploy VieNeu-TTS as a high-performance API Server (powered by LMDeploy) with a 
 **Requirement**: [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html) is required for GPU support.
 
 **Start the Server with a Public Tunnel (No port forwarding needed):**
+```bash
 docker run --gpus all -p 23333:23333 pnnbao/vieneu-tts:serve --tunnel
+```
 
 *   **Default**: The server loads the `VieNeu-TTS` model for maximum quality.
 *   **Tunneling**: The Docker image includes a built-in `bore` tunnel. Check the container logs to find your public address (e.g., `bore.pub:31631`).
@@ -249,10 +265,9 @@ Train VieNeu-TTS on your own voice or custom datasets.
 
 Deploy quickly without manual environment setup.
 
-```bash
-# Run with CPU
-docker compose --profile cpu up
+> **Note:** Docker deployment currently supports **GPU only**. For CPU usage, please follow the [Installation & Web UI](#installation) section to install from source.
 
+```bash
 # Run with GPU (Requires NVIDIA Container Toolkit)
 docker compose --profile gpu up
 ```

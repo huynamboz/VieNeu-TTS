@@ -80,15 +80,29 @@ Cách nhanh nhất để trải nghiệm VieNeu-TTS là thông qua giao diện W
     ```
 
   - **Bước B: Cài đặt các phụ thuộc**
-  - **Lựa chọn 1: Mặc định (có hỗ trợ GPU)**
+  
+  **Lựa chọn 1: Hỗ trợ GPU (Mặc định)**
     ```bash
     uv sync
     ```
     *(Tùy chọn: Xem [Tăng tốc GGUF GPU](#gguf-gpu) nếu bạn muốn chạy mô hình GGUF trên GPU)*
 
-  - **Lựa chọn 2: Chỉ CPU (Phiên bản nhẹ)**
+  **Lựa chọn 2: Chỉ CPU (Nhẹ, không CUDA)**
     ```bash
-    uv sync --no-default-groups
+    # Linux/macOS:
+    cp pyproject.toml pyproject.toml.gpu
+    cp pyproject.toml.cpu pyproject.toml
+    uv sync
+    
+    # Windows (PowerShell/CMD):
+    copy pyproject.toml pyproject.toml.gpu
+    copy pyproject.toml.cpu pyproject.toml
+    uv sync
+    ```
+    *Điều này sẽ cài đặt phiên bản PyTorch CPU (nhẹ hơn ~500MB). Để chuyển lại GPU:*
+    ```bash
+    # Linux/macOS: cp pyproject.toml.gpu pyproject.toml && uv sync
+    # Windows: copy pyproject.toml.gpu pyproject.toml && uv sync
     ```
 
 3. **Khởi chạy Giao diện Web:**
@@ -155,7 +169,9 @@ Triển khai VieNeu-TTS dưới dạng API Server hiệu suất cao (được h�
 **Yêu cầu**: [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html) là cần thiết để hỗ trợ GPU.
 
 **Khởi chạy Server với Public Tunnel (Không cần mở port):**
+```bash
 docker run --gpus all -p 23333:23333 pnnbao/vieneu-tts:serve --tunnel
+```
 
 *   **Mặc định**: Server tải mô hình `VieNeu-TTS` để có chất lượng tối đa.
 *   **Tunneling**: Image Docker bao gồm một tunnel `bore` tích hợp sẵn. Kiểm tra log container để tìm địa chỉ public của bạn (ví dụ: `bore.pub:31631`).
@@ -248,10 +264,9 @@ Huấn luyện VieNeu-TTS trên giọng nói của chính bạn hoặc các tậ
 
 Triển khai nhanh chóng mà không cần thiết lập môi trường thủ công.
 
-```bash
-# Chạy với CPU
-docker compose --profile cpu up
+> **Lưu ý:** Triển khai Docker hiện chỉ hỗ trợ **GPU**. Để sử dụng CPU, vui lòng cài từ source (xem [Cài đặt & Giao diện Web](#installation)).
 
+```bash
 # Chạy với GPU (Yêu cầu NVIDIA Container Toolkit)
 docker compose --profile gpu up
 ```
