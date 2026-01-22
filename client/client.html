@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;700&family=JetBrains+Mono:wght@400;600&display=swap" />
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+Display:wght@500;700&family=JetBrains+Mono:wght@400;600&display=swap" />
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🦜</text></svg>">
 
@@ -19,8 +19,8 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['"Space Grotesk"', 'sans-serif'],
-                        display: ['"Fraunces"', 'serif'],
+                        sans: ['"Noto Sans"', 'sans-serif'],
+                        display: ['"Noto Sans Display"', 'sans-serif'],
                         mono: ['"JetBrains Mono"', 'monospace'],
                     },
                     colors: {
@@ -84,8 +84,8 @@
                 radial-gradient(900px circle at 92% 12%, rgba(245, 158, 11, 0.16), transparent 55%),
                 linear-gradient(160deg, var(--bg-0), var(--bg-1) 45%, var(--bg-2));
             color: var(--text-1);
-            font-family: "Space Grotesk", sans-serif;
-            letter-spacing: 0.01em;
+            font-family: "Noto Sans", sans-serif;
+            letter-spacing: 0.005em;
             min-height: 100vh;
         }
 
@@ -231,7 +231,7 @@
         }
 
         .title-text {
-            font-family: "Fraunces", serif;
+            font-family: "Noto Sans Display", sans-serif;
             font-weight: 700;
             letter-spacing: 0.01em;
         }
@@ -268,9 +268,34 @@
             border: 1px solid var(--border);
             color: var(--text-1);
             padding: 14px 16px;
+            padding-right: 44px;
             border-radius: 14px;
             font-size: 15px;
             outline: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            background-size: 14px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .select-control:hover {
+            border-color: rgba(20, 184, 166, 0.35);
+        }
+
+        .select-control:focus {
+            border-color: rgba(20, 184, 166, 0.6);
+            box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.2);
+        }
+
+        [data-theme="light"] .select-control {
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23334155' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>");
+        }
+
+        .select-control option {
+            background: var(--surface);
+            color: var(--text-1);
         }
 
         .btn-primary {
@@ -1156,7 +1181,6 @@ Tóm lại, thế giới ngày mai thuộc về những người sẵn sàng bư
                                 <span className="chip">Streaming PCM</span>
                                 <span className="chip">Instant Voice</span>
                                 <div className="flex items-center gap-2">
-                                    <span className="theme-switch-label">Theme</span>
                                     <button
                                         className={`theme-switch ${theme === 'light' ? 'is-light' : 'is-dark'}`}
                                         onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
