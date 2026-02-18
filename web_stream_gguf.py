@@ -4,7 +4,7 @@ import time
 import asyncio
 import numpy as np
 from fastapi import FastAPI
-from fastapi.responses import HTMLResponse, StreamingResponse
+from fastapi.responses import HTMLResponse, JSONResponse, Response, StreamingResponse
 import uvicorn
 from vieneu import Vieneu
 import io
@@ -147,6 +147,86 @@ def float32_to_pcm16(audio_float):
     """Convert float32 [-1, 1] to int16 bytes"""
     audio_int16 = (audio_float * 32767).clip(-32768, 32767).astype(np.int16)
     return audio_int16.tobytes()
+
+
+def _audio_to_mp3(audio_float: np.ndarray, sample_rate: int = 24000) -> bytes:
+    """Convert float32 audio array to MP3 bytes. Uses imageio-ffmpeg (bundled)."""
+    import imageio_ffmpeg
+    from pydub import AudioSegment
+    # Use bundled ffmpeg from imageio-ffmpeg (no system install needed)
+    ffmpeg_path = imageio_ffmpeg.get_ffmpeg_exe()
+    AudioSegment.converter = ffmpeg_path
+    AudioSegment.ffmpeg = ffmpeg_path
+    audio_int16 = (audio_float * 32767).clip(-32768, 32767).astype(np.int16)
+    segment = AudioSegment(
+        audio_int16.tobytes(),
+        frame_rate=sample_rate,
+        sample_width=2,
+        channels=1,
+    )
+    buffer = io.BytesIO()
+    segment.export(buffer, format="mp3", bitrate="192k")
+    return buffer.getvalue()
+
+
+@app.get("/synthesize")
+async def synthesize_audio(
+    text: str,
+    voice_id: str = None,
+    format: str = "wav",
+):
+    """
+    Generate full audio and return as file.
+    format: 'wav' (default) or 'mp3'. MP3 requires ffmpeg installed.
+    """
+    if tts is None:
+        return JSONResponse(
+            status_code=503,
+            content={"error": "Model not loaded yet"},
+        )
+
+    voice_data = None
+    if voice_id:
+        try:
+            voice_data = tts.get_preset_voice(voice_id)
+        except Exception:
+            pass
+
+    try:
+        audio = tts.infer(text, voice=voice_data)
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+    if format.lower() == "mp3":
+        try:
+            mp3_bytes = _audio_to_mp3(audio, tts.sample_rate)
+            return Response(
+                content=mp3_bytes,
+                media_type="audio/mpeg",
+                headers={"Content-Disposition": "attachment; filename=output.mp3"},
+            )
+        except Exception as e:
+            return JSONResponse(
+                status_code=500,
+                content={
+                    "error": f"MP3 conversion failed: {e}. Install ffmpeg: brew install ffmpeg",
+                },
+            )
+
+    # WAV output
+    buffer = io.BytesIO()
+    with wave.open(buffer, "wb") as wav_file:
+        wav_file.setnchannels(1)
+        wav_file.setsampwidth(2)
+        wav_file.setframerate(tts.sample_rate)
+        wav_file.writeframes(float32_to_pcm16(audio))
+    buffer.seek(0)
+    return Response(
+        content=buffer.getvalue(),
+        media_type="audio/wav",
+        headers={"Content-Disposition": "attachment; filename=output.wav"},
+    )
+
 
 @app.get("/stream")
 async def stream_audio(text: str, voice_id: str = None):
