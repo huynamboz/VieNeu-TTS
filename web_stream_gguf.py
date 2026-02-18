@@ -169,36 +169,25 @@ def _audio_to_mp3(audio_float: np.ndarray, sample_rate: int = 24000) -> bytes:
     return buffer.getvalue()
 
 
-@app.get("/synthesize")
-async def synthesize_audio(
-    text: str,
-    voice_id: str = None,
-    format: str = "wav",
-):
+@app.get("/stream")
+async def stream_audio(text: str, voice_id: str = None, format: str = "wav"):
     """
-    Generate full audio and return as file.
-    format: 'wav' (default) or 'mp3'. MP3 requires ffmpeg installed.
+    Audio endpoint. format: 'wav' (default, streaming) or 'mp3' (full file).
     """
     if tts is None:
-        return JSONResponse(
-            status_code=503,
-            content={"error": "Model not loaded yet"},
-        )
+        return JSONResponse(status_code=503, content={"error": "Model not loaded yet"})
 
     voice_data = None
     if voice_id:
         try:
             voice_data = tts.get_preset_voice(voice_id)
         except Exception:
-            pass
-
-    try:
-        audio = tts.infer(text, voice=voice_data)
-    except Exception as e:
-        return JSONResponse(status_code=500, content={"error": str(e)})
+            print(f"Voice {voice_id} not found, using default.")
 
     if format.lower() == "mp3":
+        # MP3: generate full audio then convert (no streaming)
         try:
+            audio = tts.infer(text, voice=voice_data)
             mp3_bytes = _audio_to_mp3(audio, tts.sample_rate)
             return Response(
                 content=mp3_bytes,
@@ -208,56 +197,28 @@ async def synthesize_audio(
         except Exception as e:
             return JSONResponse(
                 status_code=500,
-                content={
-                    "error": f"MP3 conversion failed: {e}. Install ffmpeg: brew install ffmpeg",
-                },
+                content={"error": str(e)},
             )
 
-    # WAV output
-    buffer = io.BytesIO()
-    with wave.open(buffer, "wb") as wav_file:
-        wav_file.setnchannels(1)
-        wav_file.setsampwidth(2)
-        wav_file.setframerate(tts.sample_rate)
-        wav_file.writeframes(float32_to_pcm16(audio))
-    buffer.seek(0)
-    return Response(
-        content=buffer.getvalue(),
-        media_type="audio/wav",
-        headers={"Content-Disposition": "attachment; filename=output.wav"},
-    )
-
-
-@app.get("/stream")
-async def stream_audio(text: str, voice_id: str = None):
-    """Streaming Endpoint with Voice Support"""
-    
-    voice_data = None
-    if voice_id:
-        try:
-            voice_data = tts.get_preset_voice(voice_id)
-        except Exception:
-            print(f"Voice {voice_id} not found, using default.")
-
+    # WAV: streaming
     def audio_generator():
         header = io.BytesIO()
         with wave.open(header, 'wb') as wav_file:
             wav_file.setnchannels(1)
             wav_file.setsampwidth(2)
             wav_file.setframerate(24000)
-            wav_file.setnframes(100_000_000) 
+            wav_file.setnframes(100_000_000)
         yield header.getvalue()
-        
+
         start = time.time()
         count = 0
         try:
             for chunk in tts.infer_stream(text, voice=voice_data):
                 if count == 0:
-                     print(f"⚡ First sound in {time.time() - start:.3f}s")
+                    print(f"⚡ First sound in {time.time() - start:.3f}s")
                 count += 1
                 yield float32_to_pcm16(chunk)
-                time.sleep(0.001) 
-                
+                time.sleep(0.001)
         except Exception as e:
             print(f"Error during inference: {e}")
 
